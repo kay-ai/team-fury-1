@@ -2,6 +2,8 @@
 
 
 $json = $_SERVER["QUERY_STRING"] ?? '';
+$api = [];
+$data = [];
 
 function checkpass($string)
 {
@@ -40,13 +42,18 @@ foreach ($dir as $file) {
         $execname = "dart";
     }
 
-    $executed = exec($execname . " scripts/".$file);
-    $output[] = [$executed, checkpass($executed), $fileext[0]];
+    $content = exec($execname . " scripts/".$file);
+    $output[] = [$content, checkpass($content), $fileext[0]];
+
+    @$data[$fileext[0]]->content = $content;
+    $data[$fileext[0]]->status = checkpass($content);
+    $data[$fileext[0]]->name = $fileext[0];
 
 } ob_end_flush();
+    $api = $data;
 
     if (isset($json) && $json == 'json') {
-        echo json_encode($output);
+        echo json_encode($api);
     } else {
     ?>
 
